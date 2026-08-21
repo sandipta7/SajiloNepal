@@ -4,7 +4,7 @@ import {
   Search,
   Menu,
   Plus,
-  ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Logo } from './Logo';
@@ -12,7 +12,7 @@ import { Logo } from './Logo';
 export const Header = ({ onMobileMenuToggle }) => {
   const {
     setCurrentView,
-    navigateToAdmin,
+    logoutCitizen,
     notifications,
     setIsNotificationOpen,
     issues,
@@ -26,11 +26,11 @@ export const Header = ({ onMobileMenuToggle }) => {
 
   const searchResults = searchQuery.trim()
     ? issues.filter(
-        (i) =>
-          i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          i.trackingNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          i.locationName.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      (i) =>
+        i.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        i.trackingNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        i.locationName.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : [];
 
   return (
@@ -113,16 +113,6 @@ export const Header = ({ onMobileMenuToggle }) => {
 
       {/* Right Controls & Actions */}
       <div className="flex items-center gap-2 md:gap-3">
-        {/* Officer Desk Quick Switcher */}
-        <button
-          id="headerOfficerDeskBtn"
-          onClick={() => navigateToAdmin('overview')}
-          className="hidden lg:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition-all"
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
-          <span>Officer Desk</span>
-        </button>
-
         {/* Quick Report Trigger */}
         <button
           id="headerQuickReportBtn"
@@ -151,15 +141,25 @@ export const Header = ({ onMobileMenuToggle }) => {
           )}
         </button>
 
-        {/* Citizen Mini Avatar */}
+        {/* Citizen Mini Avatar & Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-slate-100">
+          <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200 bg-slate-100 hidden xs:block">
             <img
               src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80"
               alt="Citizen Profile"
               className="w-full h-full object-cover"
             />
           </div>
+
+          <button
+            id="headerCitizenLogoutBtn"
+            onClick={logoutCitizen}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-all cursor-pointer shadow-2xs active:scale-95"
+            title="Log out to portal selection"
+          >
+            <LogOut className="w-3.5 h-3.5 text-slate-500 hover:text-red-600" />
+            <span className="hidden sm:inline font-bold">Logout</span>
+          </button>
         </div>
       </div>
     </header>

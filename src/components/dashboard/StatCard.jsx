@@ -13,40 +13,28 @@ export const StatCard = ({
     switch (variant) {
       case 'pending':
         return {
-          bg: 'bg-white',
-          textColor: 'text-slate-900',
-          iconColor: 'text-blue-500',
-          titleColor: 'text-slate-500',
-          border: 'border-slate-200 hover:border-slate-300',
-          accent: 'border-l-4 border-l-blue-500',
+          iconBg: 'bg-blue-50 text-[#003893] border-blue-100 group-hover:bg-[#003893] group-hover:text-white',
+          dotBg: 'bg-[#003893]',
+          accentHover: 'hover:border-blue-300 hover:shadow-blue-950/5',
         };
       case 'inProgress':
         return {
-          bg: 'bg-white',
-          textColor: 'text-slate-900',
-          iconColor: 'text-amber-500',
-          titleColor: 'text-slate-500',
-          border: 'border-slate-200 hover:border-slate-300',
-          accent: 'border-l-4 border-l-amber-500',
+          iconBg: 'bg-amber-50 text-amber-700 border-amber-100 group-hover:bg-amber-500 group-hover:text-white',
+          dotBg: 'bg-amber-500',
+          accentHover: 'hover:border-amber-300 hover:shadow-amber-950/5',
         };
       case 'resolved':
         return {
-          bg: 'bg-white',
-          textColor: 'text-slate-900',
-          iconColor: 'text-green-600',
-          titleColor: 'text-slate-500',
-          border: 'border-slate-200 hover:border-slate-300',
-          accent: 'border-l-4 border-l-green-600',
+          iconBg: 'bg-emerald-50 text-emerald-700 border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white',
+          dotBg: 'bg-emerald-600',
+          accentHover: 'hover:border-emerald-300 hover:shadow-emerald-950/5',
         };
       case 'surface':
       default:
         return {
-          bg: 'bg-white',
-          textColor: 'text-slate-900',
-          iconColor: 'text-[#dc2626]',
-          titleColor: 'text-slate-500',
-          border: 'border-slate-200 hover:border-slate-300',
-          accent: 'border-l-4 border-l-[#dc2626]',
+          iconBg: 'bg-red-50 text-[#dc2626] border-red-100 group-hover:bg-[#dc2626] group-hover:text-white',
+          dotBg: 'bg-[#dc2626]',
+          accentHover: 'hover:border-red-300 hover:shadow-red-950/5',
         };
     }
   };
@@ -57,24 +45,29 @@ export const StatCard = ({
     <div
       id={id}
       onClick={onClick}
-      className={`${style.bg} ${style.border} ${style.accent} border p-5 rounded-xl shadow-xs flex flex-col justify-between h-32 hover:-translate-y-0.5 transition-all cursor-pointer group select-none`}
+      className={`bg-white border border-slate-200/90 ${style.accentHover} p-5 rounded-2xl shadow-xs flex flex-col justify-between h-34 hover:-translate-y-1 transition-all duration-200 cursor-pointer group select-none relative overflow-hidden`}
     >
       <div className="flex items-center justify-between">
-        <p className={`text-xs font-semibold uppercase tracking-wider ${style.titleColor}`}>
-          {title}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${style.dotBg}`}></span>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 group-hover:text-slate-900 transition-colors">
+            {title}
+          </p>
+        </div>
         {subText && (
-          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
             {subText}
           </span>
         )}
       </div>
 
-      <div className="flex items-end justify-between">
-        <p className={`text-3xl md:text-4xl font-bold tracking-tight ${style.textColor}`}>
+      <div className="flex items-end justify-between pt-2">
+        <p className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 tabular-nums">
           {count}
         </p>
-        <Icon className={`w-7 h-7 ${style.iconColor} group-hover:scale-105 transition-transform`} />
+        <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-200 shadow-2xs ${style.iconBg}`}>
+          <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
+        </div>
       </div>
     </div>
   );

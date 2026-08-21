@@ -15,8 +15,9 @@ import {
 import { useApp } from '../../context/AppContext';
 import { Logo } from '../common/Logo';
 
-export const AdminLogin = ({ onBackToCitizen }) => {
-  const { loginAdmin } = useApp();
+export const AdminLogin = ({ onBackToGateway, onBackToCitizen }) => {
+  const { loginAdmin, navigateToGateway } = useApp();
+  const handleBack = onBackToGateway || onBackToCitizen || navigateToGateway;
   const [email, setEmail] = useState('admin@kathmandu.gov.np');
   const [password, setPassword] = useState('nepal2025');
   const [showPassword, setShowPassword] = useState(false);
@@ -78,11 +79,11 @@ export const AdminLogin = ({ onBackToCitizen }) => {
       {/* Top back button */}
       <div className="w-full max-w-md mb-4 flex justify-between items-center">
         <button
-          onClick={onBackToCitizen}
-          className="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-800"
+          onClick={handleBack}
+          className="text-xs font-semibold text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-800 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to Citizen</span>
+          <span>Back to Portal Selection</span>
         </button>
 
         <span className="text-[10px] font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">

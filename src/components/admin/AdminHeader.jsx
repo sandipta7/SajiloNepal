@@ -1,19 +1,17 @@
 import React from 'react';
 import {
-  ExternalLink,
   Flame,
   Menu,
   User,
+  LogOut,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
-export const AdminHeader = ({ onMobileMenuToggle, onExitToCitizen }) => {
-  const { adminUser, logoutAdmin, stats, issues, setSelectedIssueId, setAdminView } = useApp();
+export const AdminHeader = ({ onMobileMenuToggle }) => {
+  const { adminUser, logoutAdmin, stats, setSelectedIssueId, setAdminView } = useApp();
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to sign out of the Municipal Admin Panel?')) {
-      logoutAdmin();
-    }
+    logoutAdmin();
   };
 
   return (
@@ -50,13 +48,15 @@ export const AdminHeader = ({ onMobileMenuToggle, onExitToCitizen }) => {
           </div>
         )}
 
-        {/* Exit to Citizen Portal Button */}
+        {/* Admin Header Logout Button */}
         <button
-          onClick={onExitToCitizen}
-          className="flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 font-medium transition-all"
+          id="adminHeaderLogoutBtn"
+          onClick={handleLogout}
+          className="flex items-center gap-1.5 bg-red-950/60 hover:bg-red-900 text-red-200 hover:text-white text-xs px-2.5 py-1.5 rounded-lg border border-red-800/80 font-semibold transition-all cursor-pointer shadow-2xs active:scale-95"
+          title="Sign Out of Admin"
         >
-          <ExternalLink className="w-3.5 h-3.5 text-red-400" />
-          <span className="hidden sm:inline">Citizen View</span>
+          <LogOut className="w-3.5 h-3.5 text-red-400" />
+          <span className="hidden sm:inline">Logout</span>
         </button>
 
         {/* Admin Officer Profile Card */}

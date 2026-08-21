@@ -19,14 +19,54 @@
   }
 }
 
+/* Nepalese Civic Theme Tokens & Accent Utilities */
+:root {
+  --nepal-red: #dc2626;
+  --nepal-crimson: #c8102e;
+  --nepal-blue: #003893;
+  --nepal-azure: #1d4ed8;
+  --nepal-gold: #f59e0b;
+  --nepal-emerald: #059669;
+}
+
+/* Custom subtle shadows for modern minimalist elevation */
+.nepal-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nepal-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+}
+
+.nepal-gradient-line {
+  background: linear-gradient(90deg, #dc2626 0%, #f59e0b 45%, #003893 100%);
+}
+
+.nepal-gradient-subtle {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.04) 0%, rgba(245, 158, 11, 0.03) 50%, rgba(0, 56, 147, 0.04) 100%);
+}
+
+/* Glassmorphic elements */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
 /* Custom scrollbars and styling */
 .customScrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 .customScrollbar::-webkit-scrollbar-track {
   background: #f1f5f9;
+  border-radius: 9999px;
 }
 
 .customScrollbar::-webkit-scrollbar-thumb {
@@ -45,10 +85,12 @@
   z-index: 10;
   font-family: 'Inter', sans-serif;
   touch-action: pan-x pan-y;
+  background-color: #f1f5f9;
 }
 
 /* Ensure smooth image scaling on retina and mobile displays */
 img {
   image-rendering: -webkit-optimize-contrast;
 }
+
 

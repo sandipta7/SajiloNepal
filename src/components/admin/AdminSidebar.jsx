@@ -13,12 +13,11 @@ import {
   ShieldCheck,
   Sliders,
   Users,
-  ExternalLink,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { Logo } from '../common/Logo';
 
-export const AdminSidebar = ({ className = '', onNavigate, onExitToCitizen }) => {
+export const AdminSidebar = ({ className = '', onNavigate }) => {
   const { adminView, setAdminView, logoutAdmin, stats, adminUser } = useApp();
 
   const adminNavItems = [
@@ -168,22 +167,13 @@ export const AdminSidebar = ({ className = '', onNavigate, onExitToCitizen }) =>
           </p>
         </div>
 
-        {/* Exit to Citizen Portal Button */}
-        <button
-          onClick={onExitToCitizen}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold border border-slate-700 transition-colors"
-        >
-          <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-          <span>Switch to Citizen View</span>
-        </button>
-
         {/* Logout Action */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 text-red-400 hover:bg-red-950/40 rounded-xl text-xs font-semibold transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-3 text-red-400 hover:bg-red-950/40 rounded-xl text-xs font-semibold border border-red-900/40 transition-colors cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
-          <span>Sign Out of Admin</span>
+          <span>Sign Out of Admin • बाहिरिनुहोस्</span>
         </button>
       </div>
     </aside>

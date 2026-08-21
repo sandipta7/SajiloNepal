@@ -14,6 +14,7 @@ import {
   ThumbsUp,
   RotateCw,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useApp } from '../../context/AppContext';
@@ -52,13 +53,13 @@ export const IssueDetail = ({ onBack }) => {
 
   if (!selectedIssue) {
     return (
-      <div className="p-12 text-center">
-        <p className="text-sm text-[#75777f]">No issue selected.</p>
+      <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-xs max-w-lg mx-auto mt-8">
+        <p className="text-sm font-semibold text-slate-500">No issue ticket selected.</p>
         <button
           onClick={handleBack}
-          className="mt-4 px-4 py-2 bg-[#031635] text-white rounded-xl text-xs font-semibold"
+          className="mt-4 px-5 py-2.5 bg-[#003893] text-white rounded-xl text-xs font-bold shadow-xs hover:bg-[#002b70]"
         >
-          Return Back
+          Return to Feed
         </button>
       </div>
     );
@@ -83,9 +84,10 @@ export const IssueDetail = ({ onBack }) => {
     if (status === 'resolved') {
       try {
         confetti({
-          particleCount: 60,
+          particleCount: 70,
           spread: 60,
           origin: { y: 0.7 },
+          colors: ['#dc2626', '#003893', '#f59e0b', '#059669'],
         });
       } catch {
         // ignore
@@ -97,24 +99,24 @@ export const IssueDetail = ({ onBack }) => {
   return (
     <div
       id="issueDetailView"
-      className="max-w-5xl mx-auto pb-12 animate-in fade-in duration-300"
+      className="max-w-5xl mx-auto pb-12 animate-in fade-in duration-300 space-y-6"
     >
       {/* Top Bar Navigation */}
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex items-center justify-between gap-4">
         <button
           id="backToReportsBtn"
           onClick={handleBack}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-xs transition-all"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-white border border-slate-200/90 hover:bg-slate-50 shadow-2xs transition-all active:scale-95 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             id="shareIssueBtn"
             onClick={handleShare}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 shadow-xs transition-all"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-700 bg-white border border-slate-200/90 hover:bg-slate-50 shadow-2xs transition-all active:scale-95 cursor-pointer"
           >
             <Share2 className="w-4 h-4" />
             <span>{isCopied ? 'Link Copied!' : 'Share Ticket'}</span>
@@ -123,16 +125,21 @@ export const IssueDetail = ({ onBack }) => {
           <button
             id="upvoteDetailBtn"
             onClick={() => upvoteIssue(selectedIssue.id)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all shadow-xs ${
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer ${
               selectedIssue.hasUpvoted
-                ? 'bg-red-50 text-[#dc2626] border border-red-200'
+                ? 'bg-red-50 text-[#dc2626] border border-red-200 shadow-2xs ring-2 ring-red-100'
                 : 'bg-[#dc2626] text-white hover:bg-[#b91c1c]'
             }`}
+            title={selectedIssue.hasUpvoted ? 'Remove support / like' : 'Support / like this issue'}
           >
-            <ThumbsUp className="w-4 h-4" />
-            <span>
+            <ThumbsUp
+              className={`w-4 h-4 transition-transform duration-200 ${
+                selectedIssue.hasUpvoted ? 'fill-[#dc2626] text-[#dc2626] scale-110' : ''
+              }`}
+            />
+            <span className="tabular-nums">
               {Math.max(0, Number(selectedIssue.upvotes) || 0)}{' '}
-              {selectedIssue.hasUpvoted ? 'Upvoted' : 'Support Issue'}
+              {selectedIssue.hasUpvoted ? 'Endorsed' : 'Endorse Issue'}
             </span>
           </button>
         </div>
@@ -141,28 +148,30 @@ export const IssueDetail = ({ onBack }) => {
       {/* Main Issue Header Card */}
       <div
         id="issueHeaderCard"
-        className="bg-white rounded-xl p-6 md:p-8 border border-slate-200 shadow-xs mb-6"
+        className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/90 shadow-xs relative overflow-hidden nepal-gradient-subtle"
       >
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div className="absolute top-0 left-0 right-0 h-1 nepal-gradient-line"></div>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2.5">
-            <span className="font-mono text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
+            <span className="font-mono text-xs font-bold text-[#003893] bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">
               #{selectedIssue.trackingNumber}
             </span>
             <SeverityBadge severity={selectedIssue.severity} />
             <StatusBadge status={selectedIssue.status} />
           </div>
 
-          <div className="text-xs text-slate-500 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5" />
+          <div className="text-xs text-slate-500 font-medium flex items-center gap-1.5 bg-white/80 px-3 py-1 rounded-full border border-slate-200/60 shadow-2xs">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
             <span>Reported {formatRelativeTime(selectedIssue.reportedAt)}</span>
           </div>
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight mb-2">
+        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-2">
           {selectedIssue.title}
         </h1>
 
-        <div className="flex items-center gap-2 text-xs md:text-sm font-medium text-slate-500 mb-6">
+        <div className="flex items-center gap-2 text-xs md:text-sm font-semibold text-slate-600 mb-6">
           <MapPin className="w-4 h-4 text-[#dc2626] flex-shrink-0" />
           <span>
             {selectedIssue.locationName} • {selectedIssue.ward} •{' '}
@@ -172,13 +181,13 @@ export const IssueDetail = ({ onBack }) => {
 
         {/* Hero Photo Banner */}
         {selectedIssue.images && selectedIssue.images.length > 0 && (
-          <div className="relative rounded-lg overflow-hidden max-h-[380px] w-full border border-slate-200 shadow-inner">
+          <div className="relative rounded-2xl overflow-hidden max-h-[380px] w-full border border-slate-200 shadow-inner">
             <img
               src={selectedIssue.images[0]}
               alt={selectedIssue.title}
               className="w-full h-full object-cover max-h-[380px]"
             />
-            <div className="absolute bottom-3 left-3 bg-slate-950/70 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-md flex items-center gap-2">
+            <div className="absolute bottom-3 left-3 bg-slate-950/75 backdrop-blur-md text-white text-xs px-3.5 py-2 rounded-xl flex items-center gap-2 font-bold shadow-md">
               <MapPin className="w-3.5 h-3.5 text-red-400" />
               <span>Verified Photo Evidence • Geo-tagged</span>
             </div>
@@ -193,15 +202,17 @@ export const IssueDetail = ({ onBack }) => {
           {/* Civic Resolution Progress Timeline */}
           <div
             id="resolutionTimelineCard"
-            className="bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-xs"
+            className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/90 shadow-xs"
           >
-            <h2 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <RotateCw className="w-5 h-5 text-[#dc2626]" />
+            <h2 className="text-lg font-black text-slate-900 mb-6 flex items-center gap-2">
+              <div className="w-7 h-7 rounded-xl bg-red-50 text-[#dc2626] flex items-center justify-center">
+                <RotateCw className="w-4 h-4" />
+              </div>
               <span>Resolution Progress Tracker</span>
             </h2>
 
             {/* Stepper Timeline */}
-            <div className="relative pl-6 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+            <div className="relative pl-6 space-y-8 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
               {selectedIssue.timeline.map((item, idx) => {
                 return (
                   <div
@@ -210,11 +221,11 @@ export const IssueDetail = ({ onBack }) => {
                   >
                     {/* Circle marker */}
                     <div
-                      className={`absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                      className={`absolute -left-6 top-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-xs ${
                         item.isCompleted
-                          ? 'bg-[#dc2626] text-white shadow-xs'
+                          ? 'bg-[#dc2626] text-white'
                           : item.isCurrent
-                          ? 'bg-amber-500 text-white ring-4 ring-amber-100'
+                          ? 'bg-[#003893] text-white ring-4 ring-blue-100'
                           : 'bg-slate-100 text-slate-400 border border-slate-200'
                       }`}
                     >
@@ -229,7 +240,7 @@ export const IssueDetail = ({ onBack }) => {
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h4
-                          className={`text-sm font-semibold ${
+                          className={`text-sm font-bold ${
                             item.isCompleted || item.isCurrent
                               ? 'text-slate-900'
                               : 'text-slate-500'
@@ -238,13 +249,13 @@ export const IssueDetail = ({ onBack }) => {
                           {item.label}
                         </h4>
                         {item.timestamp && (
-                          <span className="text-[11px] text-slate-400">
+                          <span className="text-[11px] text-slate-400 font-medium">
                             {item.timestamp}
                           </span>
                         )}
                       </div>
                       {item.notes && (
-                        <p className="text-xs text-slate-600 mt-1 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed">
+                        <p className="text-xs text-slate-600 mt-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed font-medium">
                           {item.notes}
                         </p>
                       )}
@@ -258,26 +269,25 @@ export const IssueDetail = ({ onBack }) => {
           {/* Description & Impact Metrics Card */}
           <div
             id="issueDescriptionCard"
-            className="bg-white p-6 md:p-8 rounded-xl border border-slate-200 shadow-xs space-y-6"
+            className="bg-white p-6 md:p-8 rounded-3xl border border-slate-200/90 shadow-xs space-y-6"
           >
             <div>
-              <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                 Citizen Statement & Hazard Description
               </h3>
-              <p className="text-sm text-slate-800 leading-relaxed">
+              <p className="text-sm text-slate-800 leading-relaxed font-medium">
                 {selectedIssue.description}
               </p>
             </div>
 
             {/* Impact Metric & Civic Priority */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bg-slate-50/90 p-5 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                   Civic Impact Score
                 </span>
                 <p className="text-[11px] text-slate-500">
-                  Calculated based on traffic density, school proximity, and
-                  citizen upvotes.
+                  Calculated based on traffic density, public school proximity, and community endorsements.
                 </p>
               </div>
               <ImpactBar score={selectedIssue.impactScore} />
@@ -285,19 +295,19 @@ export const IssueDetail = ({ onBack }) => {
 
             {/* Resolution Verification (if resolved) */}
             {selectedIssue.status === 'resolved' && (
-              <div className="bg-emerald-50/70 border border-emerald-200 p-4 rounded-xl space-y-2">
+              <div className="bg-emerald-50/70 border border-emerald-200 p-5 rounded-2xl space-y-2">
                 <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                  <span>Officially Resolved & Verified</span>
+                  <span>Officially Resolved & Verified by Ward Responder</span>
                 </div>
                 {selectedIssue.resolutionNotes && (
-                  <p className="text-xs text-slate-800">
+                  <p className="text-xs text-slate-800 font-medium">
                     <strong>Resolution Note:</strong>{' '}
                     {selectedIssue.resolutionNotes}
                   </p>
                 )}
                 {selectedIssue.resolutionPhoto && (
-                  <div className="mt-2 rounded-lg overflow-hidden h-36 border border-emerald-200">
+                  <div className="mt-2 rounded-xl overflow-hidden h-40 border border-emerald-200">
                     <img
                       src={selectedIssue.resolutionPhoto}
                       alt="Resolution proof"
@@ -310,38 +320,38 @@ export const IssueDetail = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Right Column: Responder Info & Admin Tools (Shown when assigned or in admin mode) */}
+        {/* Right Column: Responder Info & Authority Tools */}
         {hasRightCol && (
           <div className="space-y-6">
-            {/* Assigned Field Responder or Dedicated Category Officer Assignment */}
+            {/* Assigned Field Responder Card */}
             {selectedIssue.assignedResponder ? (
               <div
                 id="assignedResponderCard"
-                className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4"
+                className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Assigned Field Officer
                   </h3>
                   {selectedIssue.assignedResponder.badge && (
-                    <span className="text-[10px] bg-red-50 text-[#dc2626] font-bold px-2 py-0.5 rounded border border-red-200">
+                    <span className="text-[10px] bg-red-50 text-[#dc2626] font-bold px-2.5 py-0.5 rounded-full border border-red-200">
                       {selectedIssue.assignedResponder.badge}
                     </span>
                   )}
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3.5">
                     <img
                       src={selectedIssue.assignedResponder.avatar}
                       alt={selectedIssue.assignedResponder.name}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-[#dc2626]/30 shadow-xs ring-2 ring-slate-100"
+                      className="w-14 h-14 rounded-2xl object-cover border-2 border-[#003893]/30 shadow-xs ring-2 ring-slate-100"
                     />
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-bold text-slate-900 truncate">
                         {selectedIssue.assignedResponder.name}
                       </h4>
-                      <p className="text-[11px] font-medium text-[#dc2626]">
+                      <p className="text-[11px] font-bold text-[#003893]">
                         {selectedIssue.assignedResponder.role}
                       </p>
                       <p className="text-[10px] text-slate-500 leading-tight truncate">
@@ -350,28 +360,28 @@ export const IssueDetail = ({ onBack }) => {
                     </div>
                   </div>
 
-                  <div className="bg-slate-50 p-3 rounded-lg flex items-center justify-between text-xs font-medium text-slate-800 border border-slate-100">
-                    <span className="text-slate-600">Active Tasks: <strong className="text-slate-900">{selectedIssue.assignedResponder.activeTasksCount || 3}</strong></span>
-                    <span className="text-slate-600">Resolved: <strong className="text-emerald-700">{selectedIssue.assignedResponder.completedTasksCount || 42}</strong></span>
+                  <div className="bg-slate-50 p-3 rounded-xl flex items-center justify-between text-xs font-medium text-slate-800 border border-slate-100">
+                    <span className="text-slate-600">Active Tasks: <strong className="text-slate-900 font-bold">{selectedIssue.assignedResponder.activeTasksCount || 3}</strong></span>
+                    <span className="text-slate-600">Resolved: <strong className="text-emerald-700 font-bold">{selectedIssue.assignedResponder.completedTasksCount || 42}</strong></span>
                   </div>
 
                   <a
                     href={`tel:${selectedIssue.assignedResponder.phone}`}
-                    className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 py-2.5 rounded-lg font-medium text-xs transition-colors border border-slate-200"
+                    className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-2xl font-bold text-xs transition-all shadow-xs"
                   >
-                    <Phone className="w-3.5 h-3.5 text-[#dc2626]" />
+                    <Phone className="w-3.5 h-3.5 text-amber-300" />
                     <span>Direct Call ({selectedIssue.assignedResponder.phone})</span>
                   </a>
 
                   {isAdminOrResponder && (
                     <div className="pt-2 border-t border-slate-100">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                        Reassign to Department Officer:
+                        Reassign Officer:
                       </label>
                       <select
                         value={selectedIssue.assignedResponder.id}
                         onChange={(e) => assignResponder(selectedIssue.id, e.target.value)}
-                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
+                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003893]/20"
                       >
                         {INITIAL_RESPONDERS.map((r) => (
                           <option key={r.id} value={r.id}>
@@ -392,25 +402,25 @@ export const IssueDetail = ({ onBack }) => {
                 return (
                   <div
                     id="assignedResponderCard"
-                    className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4"
+                    className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4"
                   >
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                         Designated Category Officer
                       </h3>
-                      <span className="text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded border border-amber-200">
+                      <span className="text-[10px] bg-amber-50 text-amber-700 font-bold px-2.5 py-0.5 rounded-full border border-amber-200">
                         Pending Dispatch
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-3.5 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
                       <img
                         src={defaultOfficer.avatar}
                         alt={defaultOfficer.name}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 shadow-xs"
+                        className="w-12 h-12 rounded-xl object-cover border-2 border-slate-200 shadow-xs"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold text-[#dc2626] uppercase">
+                        <p className="text-[10px] font-bold text-[#dc2626] uppercase">
                           {defaultOfficer.categoryName || selectedIssue.category} Lead
                         </p>
                         <h4 className="text-xs font-bold text-slate-900 truncate">
@@ -422,13 +432,13 @@ export const IssueDetail = ({ onBack }) => {
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 leading-relaxed">
                       Dispatch the official lead assigned to handle <strong>{selectedIssue.category}</strong> problems.
                     </p>
 
                     <button
                       onClick={() => assignResponder(selectedIssue.id, defaultOfficer.id)}
-                      className="w-full py-2.5 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-colors"
+                      className="w-full py-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
                     >
                       <UserCheck className="w-4 h-4" />
                       <span>Dispatch {defaultOfficer.name}</span>
@@ -443,7 +453,7 @@ export const IssueDetail = ({ onBack }) => {
                         onChange={(e) => {
                           if (e.target.value) assignResponder(selectedIssue.id, e.target.value);
                         }}
-                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#dc2626]"
+                        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003893]/20"
                       >
                         <option value="" disabled>Choose Officer from Roster...</option>
                         {INITIAL_RESPONDERS.map((r) => (
@@ -462,35 +472,35 @@ export const IssueDetail = ({ onBack }) => {
             {isAdminOrResponder && (
               <div
                 id="municipalActionCard"
-                className="bg-slate-50 p-6 rounded-xl border border-slate-200 shadow-xs space-y-4"
+                className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-4"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                     <Shield className="w-4 h-4 text-[#dc2626]" />
                     <span>Authority Controls</span>
                   </h3>
-                  <span className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded font-semibold uppercase text-slate-600">
+                  <span className="text-[10px] bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full font-bold uppercase text-slate-700">
                     {currentRole}
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-xs text-slate-600">
-                    Update progress status of this civic ticket:
+                <div className="space-y-2.5">
+                  <p className="text-xs text-slate-600 font-medium">
+                    Update resolution state for this ticket:
                   </p>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2.5">
                     <button
                       onClick={() => handleApplyStatusChange('in_progress')}
-                      className="py-2 px-3 bg-white hover:bg-amber-50 border border-slate-200 text-amber-900 font-medium text-xs rounded-lg transition-all shadow-2xs"
+                      className="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 font-bold text-xs rounded-xl transition-all shadow-2xs"
                     >
-                      Mark In Progress
+                      In Progress
                     </button>
                     <button
                       onClick={() => handleApplyStatusChange('resolved')}
-                      className="py-2 px-3 bg-[#dc2626] hover:bg-[#b91c1c] text-white font-medium text-xs rounded-lg transition-all shadow-2xs"
+                      className="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-2xs"
                     >
-                      Mark Resolved ✓
+                      Resolved ✓
                     </button>
                   </div>
                 </div>
@@ -502,40 +512,8 @@ export const IssueDetail = ({ onBack }) => {
                     placeholder="Add official progress update note..."
                     value={newStatusNote}
                     onChange={(e) => setNewStatusNote(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#dc2626] text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003893]/20 text-slate-900 placeholder:text-slate-400 font-medium"
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Activity Logs & Audit History (Admin Portal only) */}
-            {isAdminOrResponder && (
-              <div
-                id="activityLogsCard"
-                className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-3"
-              >
-                <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Activity & Audit Trail
-                </h3>
-
-                <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto customScrollbar">
-                  {selectedIssue.activityLogs.map((log) => (
-                    <div key={log.id} className="py-2.5 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <p className="text-xs font-bold text-slate-900">
-                          {log.title}
-                        </p>
-                        <span className="text-[10px] text-slate-400">
-                          {log.timestamp}
-                        </span>
-                      </div>
-                      {log.details && (
-                        <p className="text-[11px] text-slate-500 leading-tight">
-                          {log.details}
-                        </p>
-                      )}
-                    </div>
-                  ))}
                 </div>
               </div>
             )}

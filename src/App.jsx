@@ -11,6 +11,7 @@ import { MyReports } from './components/reports/MyReports';
 import { IssueDetail } from './components/detail/IssueDetail';
 import { HowItWorks } from './components/info/HowItWorks';
 import { AdminLayout } from './components/admin/AdminLayout';
+import { PortalGateway } from './components/auth/PortalGateway';
 
 const CitizenLayout = () => {
   const { currentView, setCurrentView } = useApp();
@@ -80,13 +81,17 @@ const CitizenLayout = () => {
 };
 
 const RootRouter = () => {
-  const { portal, navigateToCitizen } = useApp();
+  const { portal } = useApp();
 
   if (portal === 'admin') {
-    return <AdminLayout onExitToCitizen={() => navigateToCitizen('dashboard')} />;
+    return <AdminLayout />;
   }
 
-  return <CitizenLayout />;
+  if (portal === 'citizen') {
+    return <CitizenLayout />;
+  }
+
+  return <PortalGateway />;
 };
 
 export default function App() {

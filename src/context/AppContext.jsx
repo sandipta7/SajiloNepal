@@ -17,18 +17,19 @@ import {
 
 const AppContext = createContext(null);
 
+const STORAGE_KEY_PORTAL = 'solve_nepal_portal_v2';
 const STORAGE_KEY_ISSUES = 'solve_nepal_issues_v2';
 const STORAGE_KEY_NOTIFS = 'solve_nepal_notifs_v2';
 const STORAGE_KEY_ROLE = 'solve_nepal_role_v2';
 const STORAGE_KEY_ADMIN_AUTH = 'solve_nepal_admin_auth_v2';
 const STORAGE_KEY_LIKED_ISSUES = 'solve_nepal_liked_issues_v2';
 
-// Known admin accounts for authenticating officers
+// Known admin and officer accounts for authenticating municipal personnel
 const ADMIN_ACCOUNTS = [
   {
     email: 'admin@kathmandu.gov.np',
     password: 'nepal2025',
-    name: 'Municipal Authority Officer',
+    name: 'Central Executive Officer',
     role: 'Super Admin',
     department: 'KMC Central Executive Office',
     badgeNumber: 'KMC-EXEC-001',
@@ -49,11 +50,51 @@ const ADMIN_ACCOUNTS = [
     email: 'sunita.waste@kmc.gov.np',
     password: 'waste2025',
     name: 'Sunita Gurung',
-    role: 'Sanitation Officer',
-    department: 'Environment & Waste Dept',
+    role: 'Chief Sanitation Inspector',
+    department: 'KMC Environment & Waste Dept',
     badgeNumber: 'KMC-ENV-018',
     avatar:
       'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
+  },
+  {
+    email: 'prakash.roads@kmc.gov.np',
+    password: 'roads123',
+    name: 'Er. Prakash Adhikari',
+    role: 'Senior Civil Infrastructure Engineer',
+    department: 'Department of Roads & Municipal Infrastructure',
+    badgeNumber: 'KMC-RDS-009',
+    avatar:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    email: 'sita.traffic@kmc.gov.np',
+    password: 'traffic123',
+    name: 'Inspector Sita KC',
+    role: 'Traffic & Signals Safety Coordinator',
+    department: 'Kathmandu Valley Traffic Police Division',
+    badgeNumber: 'KMC-TRF-022',
+    avatar:
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    email: 'bikram.power@nea.gov.np',
+    password: 'power123',
+    name: 'Bikram Thapa',
+    role: 'Grid & Electrical Field Engineer',
+    department: 'Nepal Electricity Authority (NEA) Distribution',
+    badgeNumber: 'NEA-ELEC-104',
+    avatar:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
+  },
+  {
+    email: 'deepak.water@kukl.gov.np',
+    password: 'water123',
+    name: 'Deepak Raj Regmi',
+    role: 'Hydraulic & Pipeline Supervisor',
+    department: 'Kathmandu Upatyaka Khanepani Limited (KUKL)',
+    badgeNumber: 'KUKL-WTR-077',
+    avatar:
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80',
   },
 ];
 
@@ -80,9 +121,9 @@ export const generateNextIssueId = (existingIssues = []) => {
 };
 
 export const AppProvider = ({ children }) => {
-  // Check initial portal from URL
+  // Check initial portal from URL and localStorage
   const getInitialPortalFromURL = () => {
-    if (typeof window === 'undefined') return 'citizen';
+    if (typeof window === 'undefined') return 'gateway';
     const hash = window.location.hash.toLowerCase();
     const search = window.location.search.toLowerCase();
     const path = window.location.pathname.toLowerCase();
@@ -96,17 +137,54 @@ export const AppProvider = ({ children }) => {
     ) {
       return 'admin';
     }
-    return 'citizen';
+
+    if (
+      hash.startsWith('#/dashboard') ||
+      hash.startsWith('#/explore-map') ||
+      hash.startsWith('#/report-issue') ||
+      hash.startsWith('#/my-reports') ||
+      hash.startsWith('#/issue-detail') ||
+      hash.startsWith('#/how-it-works') ||
+      hash.startsWith('#/citizen')
+    ) {
+      return 'citizen';
+    }
+
+    if (hash.startsWith('#/gateway') || hash.startsWith('#gateway')) {
+      return 'gateway';
+    }
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_PORTAL);
+      if (saved === 'citizen' || saved === 'admin' || saved === 'gateway') {
+        return saved;
+      }
+    } catch {
+      // ignore
+    }
+
+    return 'gateway';
   };
 
-  // Portal State: 'citizen' | 'admin'
+  const getInitialCitizenViewFromURL = () => {
+    if (typeof window === 'undefined') return 'dashboard';
+    const hash = window.location.hash.toLowerCase();
+    if (hash.includes('explore-map')) return 'explore-map';
+    if (hash.includes('report-issue')) return 'report-issue';
+    if (hash.includes('my-reports')) return 'my-reports';
+    if (hash.includes('issue-detail')) return 'issue-detail';
+    if (hash.includes('how-it-works')) return 'how-it-works';
+    return 'dashboard';
+  };
+
+  // Portal State: 'gateway' | 'citizen' | 'admin'
   const [portal, setPortal] = useState(getInitialPortalFromURL);
 
   // Admin Subview: 'overview' | 'dispatch' | 'map' | 'roster' | 'settings' | 'issue-detail'
   const [adminView, setAdminView] = useState('overview');
 
   // Citizen Subview: 'dashboard' | 'explore-map' | 'report-issue' | 'my-reports' | 'issue-detail' | 'how-it-works'
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState(getInitialCitizenViewFromURL);
 
   // Firebase connection status
   const [isFirebaseLive, setIsFirebaseLive] = useState(false);
@@ -264,13 +342,24 @@ export const AppProvider = ({ children }) => {
         if (parts[2] && ['overview', 'dispatch', 'map', 'roster', 'settings', 'issue-detail'].includes(parts[2])) {
           setAdminView(parts[2]);
         }
-      } else {
+      } else if (hash === '#/gateway' || hash === '#gateway') {
+        setPortal('gateway');
+      } else if (
+        hash.startsWith('#/explore-map') ||
+        hash.startsWith('#/report-issue') ||
+        hash.startsWith('#/my-reports') ||
+        hash.startsWith('#/issue-detail') ||
+        hash.startsWith('#/how-it-works') ||
+        hash.startsWith('#/dashboard') ||
+        hash.startsWith('#/citizen')
+      ) {
         setPortal('citizen');
-        if (hash === '#/explore-map' || hash === '#explore-map') setCurrentView('explore-map');
-        else if (hash === '#/report-issue' || hash === '#report-issue') setCurrentView('report-issue');
-        else if (hash === '#/my-reports' || hash === '#my-reports') setCurrentView('my-reports');
-        else if (hash === '#/how-it-works' || hash === '#how-it-works') setCurrentView('how-it-works');
-        else if (hash === '#/' || hash === '#' || hash === '') setCurrentView('dashboard');
+        if (hash.includes('explore-map')) setCurrentView('explore-map');
+        else if (hash.includes('report-issue')) setCurrentView('report-issue');
+        else if (hash.includes('my-reports')) setCurrentView('my-reports');
+        else if (hash.includes('issue-detail')) setCurrentView('issue-detail');
+        else if (hash.includes('how-it-works')) setCurrentView('how-it-works');
+        else setCurrentView('dashboard');
       }
     };
 
@@ -278,80 +367,178 @@ export const AppProvider = ({ children }) => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Synchronize hash when portal or views change
+  useEffect(() => {
+    if (portal === 'citizen') {
+      const target = `#/${currentView}`;
+      if (window.location.hash !== target) {
+        window.location.hash = target;
+      }
+    } else if (portal === 'admin') {
+      const target = `#/admin/${adminView}`;
+      if (window.location.hash !== target) {
+        window.location.hash = target;
+      }
+    }
+  }, [portal, currentView, adminView]);
+
   // Update window hash when portal / views change cleanly
+  const navigateToGateway = useCallback(() => {
+    setPortal('gateway');
+    try {
+      localStorage.setItem(STORAGE_KEY_PORTAL, 'gateway');
+    } catch {
+      // ignore
+    }
+    window.location.hash = '#/gateway';
+  }, []);
+
   const navigateToAdmin = useCallback((subview = 'overview') => {
     setPortal('admin');
     setAdminView(subview);
+    try {
+      localStorage.setItem(STORAGE_KEY_PORTAL, 'admin');
+    } catch {
+      // ignore
+    }
     window.location.hash = `#/admin/${subview}`;
   }, []);
 
-  const navigateToCitizen = useCallback((subview = 'dashboard') => {
+  const loginCitizen = useCallback((subview = 'dashboard') => {
     setPortal('citizen');
+    setCurrentRole('citizen');
     setCurrentView(subview);
-    window.location.hash = subview === 'dashboard' ? '#/' : `#/${subview}`;
+    try {
+      localStorage.setItem(STORAGE_KEY_PORTAL, 'citizen');
+      localStorage.setItem(STORAGE_KEY_ROLE, 'citizen');
+    } catch {
+      // ignore
+    }
+    window.location.hash = `#/${subview}`;
   }, []);
 
-  // Admin Authentication Actions
+  const navigateToCitizen = loginCitizen;
+
+  // Admin / Officer Authentication Actions
   const loginAdmin = (email, password) => {
     const normalizedEmail = (email || '').trim().toLowerCase();
-    const account = ADMIN_ACCOUNTS.find(
-      (acc) =>
-        acc.email.toLowerCase() === normalizedEmail &&
-        acc.password === (password || '').trim()
+    const cleanPassword = (password || '').trim();
+
+    // 1. Check known admin accounts
+    let matchedAccount = ADMIN_ACCOUNTS.find(
+      (acc) => acc.email.toLowerCase() === normalizedEmail && acc.password === cleanPassword
     );
 
-    if (account) {
+    // 2. Check if matches any INITIAL_RESPONDERS email or generic officer login
+    if (!matchedAccount) {
+      const matchedResponder = INITIAL_RESPONDERS.find(
+        (r) =>
+          (r.id && normalizedEmail.includes(r.id.toLowerCase())) ||
+          (r.name && normalizedEmail.includes(r.name.toLowerCase().split(' ')[0])) ||
+          (r.department && normalizedEmail.includes(r.category))
+      );
+
+      if (matchedResponder && (cleanPassword === 'nepal2025' || cleanPassword === 'officer123' || cleanPassword.length >= 4)) {
+        matchedAccount = {
+          email: normalizedEmail,
+          name: matchedResponder.name,
+          role: matchedResponder.role || 'Officer',
+          department: matchedResponder.department,
+          badgeNumber: `KMC-${matchedResponder.category.toUpperCase()}-09`,
+          avatar: matchedResponder.avatar,
+        };
+      }
+    }
+
+    // 3. Fallback permissive officer login for testing any valid gov email
+    if (!matchedAccount && normalizedEmail.includes('@') && cleanPassword.length >= 4) {
+      if (cleanPassword === 'nepal2025' || cleanPassword === 'officer123' || cleanPassword === 'admin123' || cleanPassword === 'waste2025' || cleanPassword === 'roads123') {
+        matchedAccount = {
+          email: normalizedEmail,
+          name: normalizedEmail.split('@')[0].replace('.', ' ').toUpperCase(),
+          role: 'Municipal Officer',
+          department: 'Kathmandu Metropolitan Authority',
+          badgeNumber: 'KMC-OFF-771',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
+        };
+      }
+    }
+
+    if (matchedAccount) {
       const authData = {
         isAuthenticated: true,
         adminUser: {
-          email: account.email,
-          name: account.name,
-          role: account.role,
-          department: account.department,
-          badgeNumber: account.badgeNumber,
-          avatar: account.avatar,
+          email: matchedAccount.email,
+          name: matchedAccount.name,
+          role: matchedAccount.role,
+          department: matchedAccount.department,
+          badgeNumber: matchedAccount.badgeNumber,
+          avatar: matchedAccount.avatar,
           token: `KMC-AUTH-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           loginTime: new Date().toISOString(),
         },
       };
       setAdminAuth(authData);
       setCurrentRole('admin');
+      setPortal('admin');
+      setAdminView('overview');
+      try {
+        localStorage.setItem(STORAGE_KEY_PORTAL, 'admin');
+        localStorage.setItem(STORAGE_KEY_ROLE, 'admin');
+      } catch {
+        // ignore
+      }
+      window.location.hash = '#/admin/overview';
       return { success: true };
     } else {
       return {
         success: false,
-        message: 'Invalid official credentials. Use demo email & password provided.',
+        message: 'Invalid official credentials. Use demo officer email & password provided.',
       };
     }
   };
 
-  const logoutAdmin = () => {
+  const logoutAdmin = useCallback(() => {
     setAdminAuth({
       isAuthenticated: false,
       adminUser: null,
     });
-    setPortal('admin');
-    setAdminView('overview');
-    window.location.hash = '#/admin';
+    setPortal('gateway');
     try {
+      localStorage.setItem(STORAGE_KEY_PORTAL, 'gateway');
       localStorage.removeItem(STORAGE_KEY_ADMIN_AUTH);
+      localStorage.removeItem(STORAGE_KEY_ROLE);
     } catch {
       // ignore
     }
-  };
+    window.location.hash = '#/gateway';
+  }, []);
+
+  const logoutCitizen = useCallback(() => {
+    setPortal('gateway');
+    try {
+      localStorage.setItem(STORAGE_KEY_PORTAL, 'gateway');
+      localStorage.removeItem(STORAGE_KEY_ROLE);
+    } catch {
+      // ignore
+    }
+    window.location.hash = '#/gateway';
+  }, []);
 
   // Derived mapped issues with user's permanent like status
   const mappedIssues = useMemo(() => {
+    const likedSet = new Set(likedIssueIds);
     return issues.map((issue) => ({
       ...issue,
       upvotes: Math.max(0, Number(issue.upvotes) || 0),
-      hasUpvoted: likedIssueIds.includes(issue.id) || Boolean(issue.hasUpvoted),
+      hasUpvoted: likedSet.has(issue.id),
     }));
   }, [issues, likedIssueIds]);
 
   // Derived selected issue
-  const selectedIssue =
-    mappedIssues.find((issue) => issue.id === selectedIssueId) || null;
+  const selectedIssue = useMemo(() => {
+    return mappedIssues.find((issue) => issue.id === selectedIssueId) || null;
+  }, [mappedIssues, selectedIssueId]);
 
   // Global Statistics
   const stats = {
@@ -422,7 +609,6 @@ export const AppProvider = ({ children }) => {
       reporterPhone: issueInput.reporterPhone || '+977 9841234567',
       images: processedImages,
       upvotes: 1,
-      hasUpvoted: true,
       impactScore:
         issueInput.severity === 'critical'
           ? 88
@@ -660,33 +846,51 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  const upvoteIssue = (issueId) => {
+  const upvoteIssue = useCallback((issueId) => {
+    const isCurrentlyLiked = likedIssueIds.includes(issueId);
+    const willBeLiked = !isCurrentlyLiked;
+
+    // Update liked issue IDs in state & localStorage
+    setLikedIssueIds((prev) => {
+      if (willBeLiked) {
+        return prev.includes(issueId) ? prev : [...prev, issueId];
+      } else {
+        return prev.filter((id) => id !== issueId);
+      }
+    });
+
     const target = issues.find((i) => i.id === issueId);
     if (!target) return;
 
-    const willBeUpvoted = !target.hasUpvoted;
-    const currentVotes = typeof target.upvotes === 'number' && !isNaN(target.upvotes) ? Math.max(0, target.upvotes) : 0;
-    const newUpvotes = willBeUpvoted ? currentVotes + 1 : Math.max(0, currentVotes - 1);
-    const currentImpact = typeof target.impactScore === 'number' && !isNaN(target.impactScore) ? Math.max(0, target.impactScore) : 50;
-    const newImpact = Math.max(0, Math.min(100, currentImpact + (willBeUpvoted ? 2 : -2)));
+    const currentVotes =
+      typeof target.upvotes === 'number' && !isNaN(target.upvotes)
+        ? Math.max(0, target.upvotes)
+        : 0;
+    const newUpvotes = willBeLiked ? currentVotes + 1 : Math.max(0, currentVotes - 1);
+    const currentImpact =
+      typeof target.impactScore === 'number' && !isNaN(target.impactScore)
+        ? Math.max(0, target.impactScore)
+        : 50;
+    const newImpact = Math.max(0, Math.min(100, currentImpact + (willBeLiked ? 2 : -2)));
 
+    // Optimistically update issues state locally
     setIssues((prev) =>
       prev.map((issue) => {
         if (issue.id !== issueId) return issue;
         return {
           ...issue,
-          upvotes: Math.max(0, newUpvotes),
-          hasUpvoted: willBeUpvoted,
+          upvotes: newUpvotes,
           impactScore: newImpact,
         };
       })
     );
 
+    // Sync numeric vote count and impact score to Cloud Firestore
     updateIssueInFirestore(issueId, {
-      upvotes: Math.max(0, newUpvotes),
+      upvotes: newUpvotes,
       impactScore: newImpact,
     });
-  };
+  }, [likedIssueIds, issues]);
 
   const markNotificationRead = (notifId) => {
     setNotifications((prev) =>
@@ -718,14 +922,17 @@ export const AppProvider = ({ children }) => {
         adminAuth,
         adminUser: adminAuth?.adminUser,
         loginAdmin,
+        loginCitizen,
         logoutAdmin,
+        logoutCitizen,
+        navigateToGateway,
         navigateToAdmin,
         navigateToCitizen,
         currentView,
         setCurrentView,
         currentRole,
         setCurrentRole,
-        issues,
+        issues: mappedIssues,
         notifications,
         selectedIssueId,
         setSelectedIssueId,

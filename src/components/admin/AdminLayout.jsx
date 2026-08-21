@@ -10,13 +10,13 @@ import { AdminRoster } from './AdminRoster';
 import { AdminSettings } from './AdminSettings';
 import { IssueDetail } from '../detail/IssueDetail';
 
-export const AdminLayout = ({ onExitToCitizen }) => {
-  const { adminAuth, adminView, setAdminView } = useApp();
+export const AdminLayout = () => {
+  const { adminAuth, adminView, setAdminView, navigateToGateway } = useApp();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // If not authenticated, render the secure Admin Login portal
   if (!adminAuth?.isAuthenticated) {
-    return <AdminLogin onBackToCitizen={onExitToCitizen} />;
+    return <AdminLogin onBackToGateway={navigateToGateway} />;
   }
 
   const renderAdminView = () => {
@@ -46,7 +46,6 @@ export const AdminLayout = ({ onExitToCitizen }) => {
       {/* Desktop Persistent Admin Sidebar */}
       <AdminSidebar
         className="hidden md:flex"
-        onExitToCitizen={onExitToCitizen}
       />
 
       {/* Mobile Drawer Admin Sidebar */}
@@ -62,7 +61,6 @@ export const AdminLayout = ({ onExitToCitizen }) => {
           >
             <AdminSidebar
               onNavigate={() => setIsMobileSidebarOpen(false)}
-              onExitToCitizen={onExitToCitizen}
             />
           </div>
         </div>
@@ -71,7 +69,6 @@ export const AdminLayout = ({ onExitToCitizen }) => {
       {/* Admin Top Header */}
       <AdminHeader
         onMobileMenuToggle={() => setIsMobileSidebarOpen(true)}
-        onExitToCitizen={onExitToCitizen}
       />
 
       {/* Main Admin Content Workspace */}
