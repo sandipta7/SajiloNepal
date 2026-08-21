@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "issues": {
+      "title": "Issues",
+      "description": "Civic grievance tickets and municipal reports",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "severity": { "type": "string" },
+        "status": { "type": "string" },
+        "locationName": { "type": "string" },
+        "ward": { "type": "string" },
+        "municipality": { "type": "string" },
+        "coordinates": { "type": "array" },
+        "reportedAt": { "type": "string" },
+        "reporterName": { "type": "string" },
+        "reporterPhone": { "type": "string" },
+        "images": { "type": "array" },
+        "upvotes": { "type": "number" },
+        "impactScore": { "type": "number" },
+        "assignedResponder": { "type": "object" },
+        "resolutionNotes": { "type": "string" },
+        "resolutionPhoto": { "type": "string" },
+        "timeline": { "type": "array" },
+        "activityLogs": { "type": "array" }
+      },
+      "required": ["trackingNumber", "title", "category", "severity", "status", "locationName", "ward"]
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "User and officer system notifications",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "isRead": { "type": "boolean" },
+        "type": { "type": "string" },
+        "relatedIssueId": { "type": "string" }
+      },
+      "required": ["title", "message"]
+    }
+  },
+  "firestore": {
+    "/issues/{issueId}": {
+      "schema": "issues",
+      "description": "Public and municipal civic grievance tickets"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "notifications",
+      "description": "Civic notifications"
+    }
+  }
+}

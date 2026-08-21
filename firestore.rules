@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Issues collection: allow reading public issues, creating new issues, updating status and upvotes
+    match /issues/{issueId} {
+      allow read: if true;
+      allow create: if request.resource.data.title is string && request.resource.data.trackingNumber is string;
+      allow update: if true;
+      allow delete: if false;
+    }
+    
+    // Notifications collection: allow read and write
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow create: if request.resource.data.title is string;
+      allow update: if true;
+      allow delete: if false;
+    }
+    
+    // Default rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

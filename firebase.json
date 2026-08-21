@@ -1,0 +1,8 @@
+{
+  "firestore": {
+    "databaseId": "ai-studio-sajilonepal-a671b116-dd26-4453-a056-1f355cc5dd58",
+    "rules": "firestore.rules",
+    "edition": "ENTERPRISE",
+    "dataAccessMode": "FIRESTORE_NATIVE"
+  }
+}

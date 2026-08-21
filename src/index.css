@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
+  }
+
+  /* Safe area padding support for notched phones */
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+
+/* Custom scrollbars and styling */
+.customScrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.customScrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.customScrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.customScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Leaflet map container fix */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  font-family: 'Inter', sans-serif;
+  touch-action: pan-x pan-y;
+}
+
+/* Ensure smooth image scaling on retina and mobile displays */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
